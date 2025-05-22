@@ -16,7 +16,7 @@ const Dashboard = () => {
   const chatWindowRef = useRef(null);
 
   useEffect(() => {
-    window.scrollTo(0, 0); 
+    window.scrollTo(0, 0);
     fetchConversations();
   }, []);
 
@@ -73,7 +73,7 @@ const Dashboard = () => {
       const mergeMessages = (existing = [], incoming = []) => {
         const merged = [...existing];
         incoming.forEach((msg) => {
-          if (!existing.some((m) => m.sender === msg.sender && m.text === msg.text && m.time === msg.time)) {
+          if (!existing.some((m) => m.sender === msg.sender && m.text === msg.text)) {
             merged.push(msg);
           }
         });
@@ -123,13 +123,13 @@ const Dashboard = () => {
   };
 
   // Copy text from AI Copilot to chat input
-const handleCopyToInput = (text) => {
-  if (chatWindowRef.current) {
-    chatWindowRef.current.setInputValue(text);
-  }
-  setShowSidebar(false); 
-  setShowAICopilot(false); 
-};
+  const handleCopyToInput = (text) => {
+    if (chatWindowRef.current) {
+      chatWindowRef.current.setInputValue(text);
+    }
+    setShowSidebar(false);
+    setShowAICopilot(false);
+  };
 
 
   // On conversation change, close sidebar and AI Copilot for better UX
