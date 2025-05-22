@@ -11,7 +11,7 @@ const inProgressReplies = new Set();
 
 export const canUserReply = (conversationId) => {
   const count = replyCounts.get(conversationId) || 0;
-  return count < 5;
+  return count < 3;
 };
 
 // Pure function to generate reply (used internally)
