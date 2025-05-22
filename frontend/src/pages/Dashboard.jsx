@@ -20,7 +20,7 @@ const Dashboard = () => {
     fetchConversations();
   }, []);
 
-  // Fetch conversations
+  // Fetch Conversations
   const fetchConversations = async () => {
     try {
       setLoading(true);
