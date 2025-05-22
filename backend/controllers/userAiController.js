@@ -6,17 +6,15 @@ const cohere = new CohereClient({
   token: process.env.COHERE_API_KEY,
 });
 
-const replyCounts = new Map();
-const inProgressReplies = new Set();
+const replyCounts = new Map(); // Map<conversationId, number>
+const inProgressReplies = new Set(); // Set<conversationId>
 
 export const canUserReply = (conversationId) => {
   const count = replyCounts.get(conversationId) || 0;
   return count < 3;
 };
 
-// Pure function to generate reply (used internally)
 export const generateUserReply = async (conversationId, agentMessage) => {
-  if (!canUserReply(conversationId)) return null;
   if (inProgressReplies.has(conversationId)) return null;
 
   try {
@@ -33,10 +31,16 @@ Now, respond as the user in a natural, casual tone.`;
       temperature: 0.7,
     });
 
-    const userReply = response.generations[0].text.trim();
-    replyCounts.set(conversationId, (replyCounts.get(conversationId) || 0) + 1);
+    const text = response.generations?.[0]?.text?.trim();
 
-    return userReply;
+    if (!text) return null;
+
+    // Only increment count after successful reply
+    const currentCount = replyCounts.get(conversationId) || 0;
+    if (currentCount >= 3) return null;
+
+    replyCounts.set(conversationId, currentCount + 1);
+    return text;
   } catch (error) {
     console.error("Cohere error:", error);
     return null;
@@ -45,7 +49,6 @@ Now, respond as the user in a natural, casual tone.`;
   }
 };
 
-// Express route handler that uses generateUserReply
 export const handleGenerateUserReply = async (req, res) => {
   const { conversationId, agentMessage } = req.body;
 
@@ -56,7 +59,7 @@ export const handleGenerateUserReply = async (req, res) => {
   const reply = await generateUserReply(conversationId, agentMessage);
 
   if (!reply) {
-    return res.status(429).json({ message: 'User reply limit reached or reply in progress' });
+    return res.status(429).json({ message: 'User reply limit reached, already replying, or generation failed' });
   }
 
   res.json({ reply });

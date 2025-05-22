@@ -15,6 +15,7 @@ const ChatWindow = forwardRef(function ChatWindow({ conversation, sendMessage },
   const [loadingOption, setLoadingOption] = useState(null);
   const [loadingDots, setLoadingDots] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   const messagesEndRef = useRef(null);
   const optionsRef = useRef(null);
@@ -109,49 +110,55 @@ const ChatWindow = forwardRef(function ChatWindow({ conversation, sendMessage },
   };
 
   const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!message.trim() || loadingOption) return;
+  e.preventDefault();
+  if (!message.trim() || loadingOption || isSending) return;
 
-    const agentMessage = message.trim();
+  setIsSending(true); // prevent double send
 
-    // Optimistically send agent message
-    sendMessage(agentMessage, "agent");
-    setMessage("");
+  const agentMessage = message.trim();
+  sendMessage(agentMessage, "agent");
+  setMessage("");
 
-    if (!conversation?._id) return;
+  if (!conversation?._id) {
+    setIsSending(false);
+    return;
+  }
 
-    try {
-      setTimeout(() => {
-        setIsTyping(true);
-      }, 800);
+  try {
+    setTimeout(() => {
+      setIsTyping(true);
+    }, 800);
 
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URI}/api/simulate-user-reply`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            conversationId: conversation._id,
-            agentMessage,
-          }),
-        }
-      );
-
-      const data = await res.json();
-
-      if (data.reply) {
-        setTimeout(() => {
-          sendMessage(data.reply, "customer");
-          setIsTyping(false);
-        }, 1200);
-      } else {
-        setIsTyping(false);
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URI}/api/simulate-user-reply`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          conversationId: conversation._id,
+          agentMessage,
+        }),
       }
-    } catch (err) {
-      console.error("Error getting simulated user reply:", err);
+    );
+
+    const data = await res.json();
+
+    if (data.reply) {
+      setTimeout(() => {
+        sendMessage(data.reply, "customer");
+        setIsTyping(false);
+        setIsSending(false);
+      }, 1200);
+    } else {
       setIsTyping(false);
+      setIsSending(false);
     }
-  };
+  } catch (err) {
+    console.error("Error getting simulated user reply:", err);
+    setIsTyping(false);
+    setIsSending(false);
+  }
+};
 
   if (!conversation) {
     return (
