@@ -237,13 +237,17 @@ const Dashboard = () => {
       {/* AI Copilot */}
       <div
         className={`
-          fixed inset-y-0 right-0 z-30 w-80 bg-white border-l border-gray-200 flex flex-col
-          transform transition-transform duration-300 ease-in-out
-          md:static md:translate-x-0
-          ${showAICopilot ? "translate-x-0" : "translate-x-full"}
-        `}
+    fixed inset-y-0 right-0 z-30 w-80 h-full bg-white border-l border-gray-200 flex flex-col
+    transform transition-transform duration-300 ease-in-out
+    md:static md:translate-x-0
+    ${showAICopilot ? "translate-x-0" : "translate-x-full"}
+  `}
       >
-        <AICopilot conversation={activeConversation} getAIResponse={getAIResponse} onCopy={handleCopyToInput} />
+        <AICopilot
+          conversation={activeConversation}
+          getAIResponse={getAIResponse}
+          onCopy={handleCopyToInput}
+        />
       </div>
 
       {showAICopilot && (
