@@ -9,12 +9,12 @@ const cohere = new CohereClient({
 const replyCounts = new Map(); // Map<conversationId, number>
 const inProgressReplies = new Set(); // Set<conversationId>
 
-export const canUserReply = (conversationId) => {
+const canUserReply = (conversationId) => {
   const count = replyCounts.get(conversationId) || 0;
   return count < 5;
 };
 
-export const generateUserReply = async (conversationId, agentMessage) => {
+const generateUserReply = async (conversationId, agentMessage) => {
   if (inProgressReplies.has(conversationId)) return null;
 
   try {
@@ -49,7 +49,7 @@ Now, respond as the user in a natural, casual tone.`;
   }
 };
 
-export const handleGenerateUserReply = async (req, res) => {
+const handleGenerateUserReply = async (req, res) => {
   const { conversationId, agentMessage } = req.body;
 
   if (!conversationId || !agentMessage) {
@@ -63,4 +63,10 @@ export const handleGenerateUserReply = async (req, res) => {
   }
 
   res.json({ reply });
+};
+
+export {
+  canUserReply,
+  generateUserReply,
+  handleGenerateUserReply
 };
