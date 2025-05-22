@@ -11,12 +11,8 @@ const AICopilot = ({ conversation, getAIResponse, onCopy }) => {
   const [isOpen, setIsOpen] = useState(false)
   const scrollRef = useRef(null)
 
-  const scrollToBottom = () => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
-
   useEffect(() => {
-    scrollToBottom()
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [conversation?.aiResponses])
 
   const handleSubmitQuestion = async (e) => {
@@ -26,14 +22,12 @@ const AICopilot = ({ conversation, getAIResponse, onCopy }) => {
     await getAIResponse(question)
     setQuestion("")
     setIsLoading(false)
-    scrollToBottom()  // scroll after sending question
   }
 
   const handleSuggestionClick = async (suggestion) => {
     setIsLoading(true)
     await getAIResponse(suggestion)
     setIsLoading(false)
-    scrollToBottom()  // scroll after clicking suggestion
   }
 
   // Pass AI answer to parent to copy into chat input (not AI Copilot's input)
