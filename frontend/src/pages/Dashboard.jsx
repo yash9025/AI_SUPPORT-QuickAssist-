@@ -229,10 +229,11 @@ const Dashboard = () => {
         </div>
 
         {/* ChatWindow container WITHOUT overflow-y-auto */}
-        <div className="flex-1 min-h-0">
+        <div className="flex-1 min-h-0 overflow-y-auto">
           <ChatWindow ref={chatWindowRef} conversation={activeConversation} sendMessage={sendMessage} />
         </div>
       </div>
+
       {/* AI Copilot */}
       <div
         className={`
