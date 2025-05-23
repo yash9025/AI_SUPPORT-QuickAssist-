@@ -16,7 +16,7 @@ An advanced AI-powered customer support chat platform designed to enhance agent 
 ## Installation
 
 ```bash
-git clone [https://github.com/yourusername/ai-customer-support-chat.git](https://github.com/yash9025/AI_SUPPORT-QuickAssist-.git)
+git clone https://github.com/yash9025/AI_SUPPORT-QuickAssist-.git
 cd AI_SUPPORT(QuickAssist)
 npm install
 npm start
@@ -36,9 +36,9 @@ npm start
 
 - React with Tailwind CSS for frontend UI
 - Node.js/Express backend (optional)
-- AI integration with OpenAI / Cohere / your choice of LLM API
+- AI integration with Cohere 
 - State management with React Context / Redux (customizable)
-- MongoDB or other DB for conversation storage
+- MongoDB for conversation storage
 
 
 ## Performance
