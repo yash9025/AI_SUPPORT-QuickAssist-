@@ -48,6 +48,12 @@ npm start
 - Lazy loading for images and async decoding to boost UI responsiveness
 
 
+## Live Demo
+
+- Try the project live here: https://ai-support-quickassist.onrender.com/
+- It might take up to 58 seconds to load initially, as the backend hosted on Render takes that long to wake up from sleep mode
+
+
 ## Contribution
 
 Contributions are welcome! Feel free to open issues or submit pull requests.
