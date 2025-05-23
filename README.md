@@ -45,7 +45,7 @@ npm start
 
 - Largest Contentful Paint (LCP): < 2.5 seconds
 - Lighthouse Performance Score: 94
-- Lazy loading for images and async decoding to boost UI responsiveness
+- Lazy loading for images and async decoding to boost UI responsiveness.
 
 
 ## Live Demo
