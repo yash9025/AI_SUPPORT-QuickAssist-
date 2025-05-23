@@ -51,6 +51,7 @@ npm start
 ## Live Demo
 
 - Try the project live here: https://ai-support-quickassist.onrender.com/
+- Demo Video : https://drive.google.com/file/d/1fV1RkZ5G1lWtL5L8PaFa-YYMl7OG-nXy/view?usp=drive_link
 - It might take up to 58 seconds to load initially, as the backend hosted on Render takes that long to wake up from sleep mode
 
 
