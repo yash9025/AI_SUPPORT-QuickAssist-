@@ -17,7 +17,7 @@ An advanced AI-powered customer support chat platform designed to enhance agent 
 
 ```bash
 git clone https://github.com/yourusername/ai-customer-support-chat.git
-cd ai-customer-support-chat
+cd AI_SUPPORT(QuickAssist)
 npm install
 npm start
 ```
