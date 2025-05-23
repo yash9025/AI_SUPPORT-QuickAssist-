@@ -20,7 +20,7 @@ git clone https://github.com/yourusername/ai-customer-support-chat.git
 cd ai-customer-support-chat
 npm install
 npm start
-
+```
 
 ## Usage
 
