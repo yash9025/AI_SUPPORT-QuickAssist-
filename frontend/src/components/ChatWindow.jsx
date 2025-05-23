@@ -110,55 +110,55 @@ const ChatWindow = forwardRef(function ChatWindow({ conversation, sendMessage },
   };
 
   const handleSendMessage = async (e) => {
-  e.preventDefault();
-  if (!message.trim() || loadingOption || isSending) return;
+    e.preventDefault();
+    if (!message.trim() || loadingOption || isSending) return;
 
-  setIsSending(true); // prevent double send
+    setIsSending(true); // prevent double send
 
-  const agentMessage = message.trim();
-  sendMessage(agentMessage, "agent");
-  setMessage("");
+    const agentMessage = message.trim();
+    sendMessage(agentMessage, "agent");
+    setMessage("");
 
-  if (!conversation?._id) {
-    setIsSending(false);
-    return;
-  }
+    if (!conversation?._id) {
+      setIsSending(false);
+      return;
+    }
 
-  try {
-    setTimeout(() => {
-      setIsTyping(true);
-    }, 800);
-
-    const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URI}/api/simulate-user-reply`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          conversationId: conversation._id,
-          agentMessage,
-        }),
-      }
-    );
-
-    const data = await res.json();
-
-    if (data.reply) {
+    try {
       setTimeout(() => {
-        sendMessage(data.reply, "customer");
+        setIsTyping(true);
+      }, 800);
+
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URI}/api/simulate-user-reply`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            conversationId: conversation._id,
+            agentMessage,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.reply) {
+        setTimeout(() => {
+          sendMessage(data.reply, "customer");
+          setIsTyping(false);
+          setIsSending(false);
+        }, 1200);
+      } else {
         setIsTyping(false);
         setIsSending(false);
-      }, 1200);
-    } else {
+      }
+    } catch (err) {
+      console.error("Error getting simulated user reply:", err);
       setIsTyping(false);
       setIsSending(false);
     }
-  } catch (err) {
-    console.error("Error getting simulated user reply:", err);
-    setIsTyping(false);
-    setIsSending(false);
-  }
-};
+  };
 
   if (!conversation) {
     return (
@@ -198,28 +198,32 @@ const ChatWindow = forwardRef(function ChatWindow({ conversation, sendMessage },
             className={`flex ${msg.sender === "agent" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`p-3 rounded-lg break-words max-w-[80%] w-fit ${
-                msg.sender === "agent"
+              className={`p-3 rounded-lg break-words max-w-[80%] ${msg.sender === "agent"
                   ? "bg-blue-500 text-white"
                   : "bg-gray-100 text-black"
-              }`}
+                }`}
+              style={{ contain: "layout style", minWidth: "120px" }}
             >
               {msg.text.startsWith("http") ? (
                 <img
                   src={msg.text}
                   alt="sent content"
+                  loading="lazy"
                   className="max-w-full h-auto rounded-md"
+                  decoding="async"
+                  fetchpriority="low"
                 />
               ) : (
                 <span>{msg.text}</span>
               )}
 
               {msg.sender === "agent" && (
-                <div className="text-xs text-gray-300 mt-1 text-right">
+                <div className="text-xs text-gray-300 mt-1 text-right select-none">
                   Seen · {msg.time}
                 </div>
               )}
             </div>
+
           </div>
         ))}
         {isTyping && (
@@ -283,9 +287,8 @@ const ChatWindow = forwardRef(function ChatWindow({ conversation, sendMessage },
           <textarea
             ref={textareaRef}
             rows={1}
-            className={`flex-1 resize-none border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 leading-snug ${
-              loadingOption ? "italic text-blue-600" : ""
-            }`}
+            className={`flex-1 resize-none border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 leading-snug ${loadingOption ? "italic text-blue-600" : ""
+              }`}
             placeholder="Type your message..."
             value={loadingOption ? message + loadingDots : message}
             onChange={(e) => {
