@@ -27,7 +27,7 @@ npm start
 - Select or create a conversation from the sidebar.
 - AI Copilot suggests replies based on conversation context.
 - Click the copy icon on any AI suggestion to paste it into the chat input.
-- Use the bold icon controls to humanize, formalize, make friendly, or fix grammar of the copied response.
+- Use the bolt icon controls to humanize, formalize, make friendly, or fix grammar of the copied response.
 - Send the polished reply to the customer.
 - Fully responsive with optimized mobile and desktop support.
 
@@ -35,10 +35,10 @@ npm start
 ## Tech Stack
 
 - React with Tailwind CSS for frontend UI
-- Node.js/Express backend (optional)
+- Node.js/Express backend 
 - AI integration with Cohere 
-- State management with React Context / Redux (customizable)
-- MongoDB for conversation storage
+- State management with React Context / Redux 
+- MongoDB for conversation and ai-response storage
 
 
 ## Performance
@@ -52,7 +52,6 @@ npm start
 
 - Try the project live here: https://ai-support-quickassist.onrender.com/
 - Demo Video : https://drive.google.com/file/d/1fV1RkZ5G1lWtL5L8PaFa-YYMl7OG-nXy/view?usp=drive_link
-- It might take up to 58 seconds to load initially, as the backend hosted on Render takes that long to wake up from sleep mode
 
 
 ## Contribution
