@@ -33,6 +33,7 @@ app.get("/health", (req, res) => {
 });
 
 app.get('/ping', (req, res) => {
+  console.log(`[${new Date().toISOString()}] Ping received`);
   res.status(200).send('pong');
 });
 
