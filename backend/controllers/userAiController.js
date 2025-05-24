@@ -11,7 +11,7 @@ const inProgressReplies = new Set(); // Set<conversationId>
 
 const canUserReply = (conversationId) => {
   const count = replyCounts.get(conversationId) || 0;
-  return count < 5;
+  return count < 8;
 };
 
 const generateUserReply = async (conversationId, agentMessage) => {
