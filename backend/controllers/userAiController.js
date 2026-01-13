@@ -6,6 +6,8 @@ const cohere = new CohereClient({
   token: process.env.COHERE_API_KEY,
 });
 
+const COHERE_MODEL = "command-r-plus-08-2024";
+
 const replyCounts = new Map(); // Map<conversationId, number>
 const inProgressReplies = new Set(); // Set<conversationId>
 
@@ -20,18 +22,16 @@ const generateUserReply = async (conversationId, agentMessage) => {
   try {
     inProgressReplies.add(conversationId);
 
-    const prompt = `Imagine you're a customer chatting with a support agent. 
-The agent just said: "${agentMessage}" 
-Now, respond as the user in a natural, casual tone.`;
-
-    const response = await cohere.generate({
-      model: "command-r-plus",
-      prompt,
+    // Fixed: Switched to Chat API structure
+    const response = await cohere.chat({
+      model: COHERE_MODEL,
+      message: `The agent just said: "${agentMessage}"`,
+      preamble: "Imagine you're a customer chatting with a support agent. Respond in a natural, casual tone. Return ONLY the response text.",
       max_tokens: 60,
       temperature: 0.7,
     });
 
-    const text = response.generations?.[0]?.text?.trim();
+    const text = response.text?.trim();
 
     if (!text) return null;
 
