@@ -76,7 +76,29 @@ const AICopilot = ({ conversation, getAIResponse, onCopy }) => {
           </div>
         </div>
         <h3 className="text-center font-medium mb-1">Hi, I'm AI Copilot</h3>
-        <p className="text-center text-sm text-gray-500 mb-6">Ask me anything about this conversation.</p>
+        <p className="text-center text-sm text-gray-500 mb-4">Ask me anything about this conversation.</p>
+
+        {/* Mocked Context Panel */}
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
+          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Live Customer Context</h4>
+          
+          <div className="flex items-center justify-between text-sm mb-1">
+            <span className="text-gray-600">Sentiment:</span>
+            <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium">Neutral / Calm</span>
+          </div>
+          
+          <div className="flex items-center justify-between text-sm mb-1">
+            <span className="text-gray-600">Active Orders:</span>
+            <span className="text-gray-800 font-medium">#ORD-58291 (Delivered)</span>
+          </div>
+
+          <div className="flex flex-col mt-3 border-t border-gray-200 pt-2 text-sm">
+            <span className="text-gray-600 mb-1">RAG Context (Knowledge Base):</span>
+            <span className="text-gray-800 text-xs italic bg-white p-2 rounded border border-gray-200">
+              "Standard refund policy: Full refund permitted if food is spilled/damaged. Requires image proof."
+            </span>
+          </div>
+        </div>
 
         {conversation?.aiResponses?.map((response, index) => (
           <div key={index} className="mb-4">

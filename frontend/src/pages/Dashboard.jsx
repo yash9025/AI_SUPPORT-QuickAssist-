@@ -3,8 +3,10 @@ import Sidebar from "../components/Sidebar";
 import ChatWindow from "../components/ChatWindow";
 import AICopilot from "../components/AICopilot";
 import axios from "axios";
+import { io } from "socket.io-client";
 
 const BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
+const socket = io(BACKEND_URI);
 
 const Dashboard = () => {
   const [conversations, setConversations] = useState([]);
@@ -18,6 +20,39 @@ const Dashboard = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchConversations();
+
+    socket.on('receive_message', (message) => {
+      setActiveConversation((prev) => {
+        if (!prev) return prev;
+        // Avoid duplicate messages
+        const exists = prev.messages.find(m => m.sender === message.sender && m.text === message.text);
+        if (exists) return prev;
+        
+        return {
+          ...prev,
+          messages: [...prev.messages, message],
+        };
+      });
+    });
+
+    socket.on('escalation_alert', (data) => {
+      console.warn('Escalation Alert:', data.reason);
+      // Optional: add a toast notification here
+    });
+
+    socket.on('ai_suggestion_ready', (data) => {
+      // Auto-populate AI Copilot with suggestion
+      if (chatWindowRef.current) {
+        // We'll let AICopilot handle it, but for now we could just log it or pass it down
+        console.log("AI Suggestion:", data.suggestion);
+      }
+    });
+
+    return () => {
+      socket.off('receive_message');
+      socket.off('escalation_alert');
+      socket.off('ai_suggestion_ready');
+    };
   }, []);
 
   // Fetch Conversations
@@ -36,12 +71,9 @@ const Dashboard = () => {
     }
   };
 
-  // Send message and optimistically update UI before backend confirmation
+  // Send message using WebSocket
   const sendMessage = async (text, sender = "agent") => {
-    if (!activeConversation) {
-      console.warn("No active conversation to send message");
-      return;
-    }
+    if (!activeConversation) return;
 
     const newMessage = {
       sender,
@@ -49,6 +81,7 @@ const Dashboard = () => {
       time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     };
 
+    // Optimistic UI Update
     setActiveConversation((prev) => {
       if (!prev) return prev;
       const updatedMessages = [...(prev.messages ?? []), newMessage];
@@ -61,41 +94,12 @@ const Dashboard = () => {
       return updatedConv;
     });
 
-    try {
-      const response = await axios.post(
-        `${BACKEND_URI}/api/conversations/${activeConversation._id}/messages`,
-        { sender, text }
-      );
-
-      const updatedConversation = response.data;
-
-      // Merge backend messages with local state to avoid duplicates
-      const mergeMessages = (existing = [], incoming = []) => {
-        const merged = [...existing];
-        incoming.forEach((msg) => {
-          if (!existing.some((m) => m.sender === msg.sender && m.text === msg.text)) {
-            merged.push(msg);
-          }
-        });
-        return merged;
-      };
-
-      setActiveConversation((prev) =>
-        prev && prev._id === updatedConversation._id
-          ? { ...prev, messages: mergeMessages(prev.messages, updatedConversation.messages) }
-          : prev
-      );
-
-      setConversations((prevConvs) =>
-        prevConvs.map((conv) =>
-          conv._id === updatedConversation._id
-            ? { ...conv, messages: mergeMessages(conv.messages, updatedConversation.messages) }
-            : conv
-        )
-      );
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
+    // Emit via WebSocket
+    socket.emit('send_message', {
+      conversationId: activeConversation._id,
+      sender,
+      text
+    });
   };
 
   // Request AI response and update conversation state
@@ -137,6 +141,7 @@ const Dashboard = () => {
     setActiveConversation(conv);
     setShowSidebar(false);
     setShowAICopilot(false);
+    socket.emit('join_conversation', conv._id);
   };
 
   if (loading) {

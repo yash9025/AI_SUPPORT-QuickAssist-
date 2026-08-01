@@ -7,6 +7,7 @@ import {
   useImperativeHandle,
 } from "react";
 import { BoltIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
+import ImageUpload from "./ImageUpload";
 
 // Chat window component for agent-customer interaction
 const ChatWindow = forwardRef(function ChatWindow({ conversation, sendMessage }, ref) {
@@ -113,51 +114,20 @@ const ChatWindow = forwardRef(function ChatWindow({ conversation, sendMessage },
     e.preventDefault();
     if (!message.trim() || loadingOption || isSending) return;
 
-    setIsSending(true); // prevent double send
+    setIsSending(true);
 
     const agentMessage = message.trim();
     sendMessage(agentMessage, "agent");
     setMessage("");
 
-    if (!conversation?._id) {
-      setIsSending(false);
-      return;
-    }
+    // Simulate-user-reply is now handled asynchronously by the backend via WebSockets
+    // We just unlock the UI immediately.
+    setIsSending(false);
+  };
 
-    try {
-      setTimeout(() => {
-        setIsTyping(true);
-      }, 800);
-
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URI}/api/simulate-user-reply`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            conversationId: conversation._id,
-            agentMessage,
-          }),
-        }
-      );
-
-      const data = await res.json();
-
-      if (data.reply) {
-        setTimeout(() => {
-          sendMessage(data.reply, "customer");
-          setIsTyping(false);
-          setIsSending(false);
-        }, 1200);
-      } else {
-        setIsTyping(false);
-        setIsSending(false);
-      }
-    } catch (err) {
-      console.error("Error getting simulated user reply:", err);
-      setIsTyping(false);
-      setIsSending(false);
-    }
+  const handleMockImageUpload = (imageUrl, tag) => {
+    // Send a message representing the image
+    sendMessage(`[Image Attached: ${tag}] ${imageUrl}`, "customer");
   };
 
   if (!conversation) {
@@ -244,6 +214,9 @@ const ChatWindow = forwardRef(function ChatWindow({ conversation, sendMessage },
       {/* Input and buttons */}
       <div className="border-t border-gray-200 px-4 pt-2 pb-4">
         <form onSubmit={handleSendMessage} className="flex items-end w-full gap-2">
+          
+          <ImageUpload onImageUploadMock={handleMockImageUpload} />
+
           <div className="relative" ref={optionsRef}>
             <button
               type="button"
